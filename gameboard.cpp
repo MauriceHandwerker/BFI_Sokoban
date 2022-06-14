@@ -9,7 +9,7 @@ using namespace std; // no Comment 
 Gameboard::Gameboard(int xMax, int yMax, int widht, int height, string fileName) 
 {
     initscr(); // Ncurses: Initialisierung + neues Fenster
-    wnd = newwin(yMax, xMax, widht, height);
+    wnd = newwin(Point.y, Point.x, widht, height);
     cbreak();
     noecho();
     clear();

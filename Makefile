@@ -5,7 +5,7 @@ LDXXFLAGS = -lncurses
 OBJS = main.o gameboard.o
 
 prog: $(OBJS) # Achtung: Einrücken mit Tabs, nicht mit Leerzeichen!
-				$(CXX) $(CXXFLAGS) -o part03 $(OBJS) $(LDXXFLAGS)
+				$(CXX) $(CXXFLAGS) -o part04 $(OBJS) $(LDXXFLAGS)
 
 %.o: %.cpp
 				$(CXX) $(CXXFLAGS) -c $<

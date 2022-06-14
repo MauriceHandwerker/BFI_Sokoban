@@ -8,9 +8,13 @@
 using namespace std;
 
 #define WAIT_TICK 10000
-WINDOW *wnd;
-shared_ptr<Gameboard> gb; // Smart-Pointer auf das Gameboard-Objekt 
+WINDOW *wnd1;
+WINDOW *wnd2;
+WINDOW *wnd3;
 
+shared_ptr<Gameboard> gb; // Smart-Pointer auf das Gameboard-Objekt 
+shared_ptr<Gameboard> gb2;
+shared_ptr<Gameboard> gb3;
 
 int init();
 void run();
@@ -25,8 +29,12 @@ int main ()
 
 int init() 
 {
-    gb = make_shared<Gameboard>(10, 10, ""); // Erstellen eines Gameboard-Objekts
-    wnd = gb->getWindowHandle(); // Holen des Ncurses-Handlers
+    gb = make_shared<Gameboard>(10, 10, 1,1, ""); // Erstellen eines Gameboard-Objekts
+    wnd1 = gb->getWindowHandle(); // Holen des Ncurses-Handlers
+    gb2 = make_shared<Gameboard>(10, 10, 1,15, "");
+    wnd2 = gb2->getWindowHandle();
+    gb3 = make_shared<Gameboard>(10, 10, 1,30, "");
+    wnd3 = gb3->getWindowHandle();
     return 0;
 }
 
@@ -38,7 +46,11 @@ void run()
 
     while(!exit_requested) 
     {
-        in_char = wgetch(wnd);
+        wrefresh(wnd1);
+        wrefresh(wnd2);
+        wrefresh(wnd3);
+
+        in_char = wgetch(wnd1);
         switch(in_char) 
         {
             case 'q':
@@ -60,7 +72,6 @@ void run()
             break;
         }   
         usleep(WAIT_TICK);
-        wrefresh(wnd);
     } 
 }
 

@@ -47,7 +47,7 @@ void run() {
 			move=gb->getPlayer();
 			move.y -= 1;
 			ch=gb->getItem(move);
-			if('X' == ch){
+			if('$' == ch){
 				itemBox = move;
 				itemBox.y -= 1;
 				gb->moveItem(move,itemBox);
@@ -60,7 +60,7 @@ void run() {
 			move=gb->getPlayer();
 			move.y += 1;
 			ch=gb->getItem(move);
-			if('X' == ch){
+			if('$' == ch){
 				itemBox = move;
 				itemBox.y += 1;
 				gb->moveItem(move,itemBox);
@@ -73,7 +73,7 @@ void run() {
 			move=gb->getPlayer();
 			move.x -= 1;
 			ch=gb->getItem(move);
-			if('X' == ch){
+			if('$' == ch){
 				itemBox = move;
 				itemBox.x -= 1;
 				gb->moveItem(move,itemBox);
@@ -86,7 +86,7 @@ void run() {
 			move=gb->getPlayer();
 			move.x += 1;
 			ch=gb->getItem(move);
-			if('X' == ch){
+			if('$' == ch){
 				itemBox = move;
 				itemBox.x += 1;
 				gb->moveItem(move,itemBox);

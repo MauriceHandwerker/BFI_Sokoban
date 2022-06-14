@@ -90,7 +90,7 @@ WINDOW *Gameboard::loadGameboard(char **argv){
 					mvwaddch(w, ady, adx, print|COLOR_PAIR(3));
 					
 				}
-				else if(print == 'X'){
+				else if(print == '$'){
 					mvwaddch(w, ady, adx, print|COLOR_PAIR(4));
 					
 				}

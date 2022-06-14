@@ -1,27 +1,35 @@
-#ifndef GAMEBOARD_HPP // Sentinel (Wächter), verhindert das
-#define GAMEBOARD_HPP // Mehrfachladen der Headerdatei!
+#ifndef GAMEBOARD_HPP		// Sentinel (Wächter), verhindert das
+#define GAMEBOARD_HPP		// Mehrfachladen der Headerdatei! 
 
-#include <string> // Verweis auf string
-#include <ncurses.h> // Verweis auf ncurses
+#include <string>
+#include <ncurses.h>
+#include <vector>
+using namespace std;
 
-using namespace std; // sollte klar sein!
-
-class Gameboard 
-{ // Klassendefinition
-    private: // Sichtbarkeit
-    WINDOW *wnd; // Eigenschaft
-
-    public: // Sichtbarkeit
-    Gameboard(int, int, int, int, string); // Konstruktor
-    virtual ~Gameboard(); // Destruktor
-    virtual WINDOW *getWindowHandle(); // eine Methode
+class Point {
+	public:
+		int x;
+		int y;
 };
 
-class Point 
-{ // Point-Klasse als Struktur-Ersatz
-    public: // public-Attribute hier sinnvoll
-    int x;
-    int y;
-}; 
+class Gameboard{
+	private:
+		WINDOW *wnd;
+		Point max;
+		Point player;
+		char prestau = ' ';
+		char irestau = ' ';
+		WINDOW *loadGameboard();
+
+	public:
+		Gameboard(int, int,string);
+		virtual ~Gameboard();
+		virtual WINDOW *getWindowHandle();
+		Point getPlayer();
+		void movePlayer(Point);
+		char getItem(Point pt);
+		void moveItem(Point from, Point to);
+};
+
 
 #endif

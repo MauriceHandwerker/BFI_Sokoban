@@ -3,6 +3,8 @@
 #include <memory>
 #include <ncurses.h>
 #include <vector>
+#include <fstream> 
+#include <iostream>
 
 #include "gameboard.hpp"
 
@@ -12,18 +14,17 @@ using namespace std;
 
 
 WINDOW *wnd;
-shared_ptr<Gameboard> gb;		//Smart-Pointer auf das Gameboard-Objekt
+shared_ptr<Gameboard> gb;					//Smart-Pointer auf das Gameboard-Objekt
 
-int init() {
+int init(char **argv) {
 	
 	Point move;
-	gb = make_shared<Gameboard>(1, 1 ,"");		// Erstellen eines Gameboard-Objekt
-	wnd = gb->getWindowHandle();// Holen des Ncurses-Handler
+	gb = make_shared<Gameboard>(0, 0, argv);		// Erstellen eines Gameboard-Objekt
+	wnd = gb->getWindowHandle();			// Holen des Ncurses-Handler
 	wrefresh(wnd);
 	
 	return 0;											// Rückgabe immer 0
 }
-
 void run() {
 	Point itemBox;
 	char ch;
@@ -33,6 +34,10 @@ void run() {
 
 	while(!exit_requested) {
 	  int in_char = wgetch(wnd);
+	  bool win = gb->areGoalsComplete();
+	  if(win == true){
+		  exit_requested = true;
+	  }
 	  switch(in_char) {
 	    case 'q':   //quit game
 	      exit_requested = true;
@@ -42,48 +47,52 @@ void run() {
 			move=gb->getPlayer();
 			move.y -= 1;
 			ch=gb->getItem(move);
-			if('$' == ch){
+			if('X' == ch){
 				itemBox = move;
 				itemBox.y -= 1;
 				gb->moveItem(move,itemBox);
 			}
 			gb->movePlayer(move);
+			gb->displayGoals();
 	      break;
 	    case KEY_DOWN:  //down
 	    case 's':
 			move=gb->getPlayer();
 			move.y += 1;
 			ch=gb->getItem(move);
-			if('$' == ch){
+			if('X' == ch){
 				itemBox = move;
 				itemBox.y += 1;
 				gb->moveItem(move,itemBox);
 			}
 			gb->movePlayer(move);
+			gb->displayGoals();
 	      break;
 	    case KEY_LEFT:   //left
 	    case 'a':
 			move=gb->getPlayer();
 			move.x -= 1;
 			ch=gb->getItem(move);
-			if('$' == ch){
+			if('X' == ch){
 				itemBox = move;
 				itemBox.x -= 1;
 				gb->moveItem(move,itemBox);
 			}
 			gb->movePlayer(move);
+			gb->displayGoals(); 
 	      break;
 	    case KEY_RIGHT:
 	    case 'd':
 			move=gb->getPlayer();
 			move.x += 1;
 			ch=gb->getItem(move);
-			if('$' == ch){
+			if('X' == ch){
 				itemBox = move;
 				itemBox.x += 1;
 				gb->moveItem(move,itemBox);
 			}
 			gb->movePlayer(move);
+			gb->displayGoals();
 	      break;
 	    default:
 	      break;
@@ -96,8 +105,14 @@ void run() {
 void close() {
 	endwin();
 }
-int main ()  {
-	init();
-	run();
-	close();
+int main (int argc, char **argv)  {
+	if (argc == 2){
+		init(argv);
+		run();
+		close();
+	} else {
+		cout << "Syntax Error. Parameter Falsch." << endl;
+		endwin();
+	}
+	
 }

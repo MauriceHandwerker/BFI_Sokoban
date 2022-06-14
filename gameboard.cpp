@@ -2,30 +2,34 @@
 #include <ncurses.h>
 #include <string>
 #include <vector>
+#include <fstream>
 
 #include "gameboard.hpp"
 
 using namespace std;
 
 
-Gameboard::Gameboard( int pos1, int pos2, string fileName){
+Gameboard::Gameboard( int pos1, int pos2, char **argv){
 	wnd = nullptr;
 	initscr();
-	
-	wnd = loadGameboard();
+
+	wnd = loadGameboard(argv);
 	cbreak();
 	noecho();
 	clear();
-	
+
 	refresh();
-	
-	
+
+
 	keypad(wnd, true);
 	curs_set(0);
 	start_color();
-	init_pair(1, COLOR_WHITE, COLOR_BLUE);	
+	init_pair(1, COLOR_GREEN, COLOR_BLACK);		//
+	init_pair(2, COLOR_CYAN, COLOR_BLACK);		//player
+	init_pair(3, COLOR_MAGENTA, COLOR_BLACK);	//goal
+	init_pair(4, COLOR_WHITE, COLOR_WHITE);		//Box
 	wbkgd(wnd, COLOR_PAIR(1));
-	
+
 	attron(A_BOLD);
 	//box(wnd, 0, 0);
 	attroff(A_BOLD);
@@ -39,79 +43,90 @@ WINDOW *Gameboard::getWindowHandle() {
 	return wnd;
 }
 
-WINDOW *Gameboard::loadGameboard(){
+WINDOW *Gameboard::loadGameboard(char **argv){
 	WINDOW *w;
-	char play = '@';
-	char chest1 = '$';
-	char chest2 = '$';
-	char ch = '#';
-	char dot = '.';
-	player.y = 4;
-	player.x = 4;
-	max.y = 7;
-	max.x = 10;
-	
-	w = newwin(max.y, max.x, 1 ,1);
-    mvwaddch(w, player.y, player.x, play);
-	mvwaddch(w, 2, 2, chest1);
-	mvwaddch(w, 2, 4, chest2);
-	mvwaddch(w, 0, 0, ch);
-	mvwaddch(w, 0, 1, ch);
-	mvwaddch(w, 0, 2, ch);
-	mvwaddch(w, 0, 3, ch);
-	mvwaddch(w, 0, 4, ch);
-	mvwaddch(w, 0, 5, ch);
-	mvwaddch(w, 0, 6, ch);
-	mvwaddch(w, 0, 7, ch);
-	mvwaddch(w, 1, 7, ch);
-	mvwaddch(w, 2, 7, ch);
-	mvwaddch(w, 3, 7, ch);
-	mvwaddch(w, 3, 8, ch);
-	mvwaddch(w, 3, 9, ch);
-	mvwaddch(w, 4, 9, ch);
-	mvwaddch(w, 5, 9, ch);
-	mvwaddch(w, 5, 8, ch);
-	mvwaddch(w, 5, 7, ch);
-	mvwaddch(w, 6, 7, ch);
-	mvwaddch(w, 6, 6, ch);
-	mvwaddch(w, 6, 5, ch);
-	mvwaddch(w, 6, 4, ch);
-	mvwaddch(w, 6, 3, ch);
-	mvwaddch(w, 6, 2, ch);
-	mvwaddch(w, 6, 1, ch);
-	mvwaddch(w, 6, 0, ch);
-	mvwaddch(w, 5, 0, ch);
-	mvwaddch(w, 4, 0, ch);
-	mvwaddch(w, 3, 0, ch);
-	mvwaddch(w, 2, 0, ch);
-	mvwaddch(w, 1, 0, ch);
-	mvwaddch(w, 4, 1, ch);
-	mvwaddch(w, 4, 2, ch);
-	mvwaddch(w, 4, 3, ch);
-	mvwaddch(w, 5, 1, dot);
-	mvwaddch(w, 5, 2, dot);
 
+	vector<string> vec;
 
+	// open stream for reading..
+	fstream f(argv[1], ios::in);
+	if (f.good()) 
+	{
+		while (!f.eof()) 
+		{
+			string str;
+			getline(f, str);
+			if (string::npos == str.find(';')) 
+			{
+				vec.push_back(str);
+				for(string xachse : vec)
+				{
+					int xcheck = xachse.length();
+					if(xcheck > max.x)
+					{
+						max.x = xachse.length();
+					}
+				}
+			}			
+		}
+		max.y = vec.size();
+
+		w = newwin(max.y, max.x, 0 ,0);
+		
+		int adx = 0;
+		int ady = 0;
+		for(string xachse : vec)
+		{
+			for(char print : xachse)
+			{
+				if(print == '@'){
+					player.y = ady;
+					player.x = adx;
+					mvwaddch(w, ady, adx, print|COLOR_PAIR(2));
+					
+				}
+				else if(print == '.'){
+					goals.push_back({adx,ady});
+					mvwaddch(w, ady, adx, print|COLOR_PAIR(3));
+					
+				}
+				else if(print == 'X'){
+					mvwaddch(w, ady, adx, print|COLOR_PAIR(4));
+					
+				}
+				else{
+					mvwaddch(w, ady, adx, print);
+				}
+				adx++;
+				
+			}
+			adx = 0;
+			ady++;
+		}
+		f.close();
+	} else {
+		cout << "Map Existiert nicht!." << endl;
+		endwin();
+	}
 	return w;
 }
+
 Point Gameboard::getPlayer(){
 	return player;
 }
 void Gameboard::movePlayer(Point move){
 	char ch = mvwinch(wnd, move.y, move.x) & A_CHARTEXT;
-	if('#' == ch || '$' == ch){
-	
+	if('#' == ch || 'X' == ch){
+
 	}else{
-		mvwaddch(wnd, move.y, move.x,'@');
-		mvwaddch(wnd, player.y, player.x,prestau);
+		mvwaddch(wnd, move.y, move.x,'@'|COLOR_PAIR(2));
+		mvwaddch(wnd, player.y, player.x, prestau);
 		player = move;
 		prestau = ' ';
-		wrefresh(wnd);
 	}
 	if(ch == '.' ){
 		prestau = '.';
 	}
-	
 }
 char Gameboard::getItem(Point pt){
 	char ch = mvwinch(wnd, pt.y, pt.x) & A_CHARTEXT;
@@ -119,12 +134,34 @@ char Gameboard::getItem(Point pt){
 }
 void Gameboard::moveItem(Point from, Point to){
 	char ch = mvwinch(wnd, to.y, to.x) & A_CHARTEXT;
-	if('#' == ch || '$' == ch){
-
-	}else{
-		mvwaddch(wnd, to.y, to.x, '$');
-		mvwaddch(wnd, from.y, from.x, irestau);
-		wrefresh(wnd);
-	}
 	
+	if('#' != ch && 'X' != ch){
+		mvwaddch(wnd, to.y, to.x, 'X'|COLOR_PAIR(4));
+		mvwaddch(wnd, from.y, from.x, irestau);
+	}
+
+}
+void Gameboard::displayGoals(){
+	for (Point goal : goals){
+		char ch = mvwinch(wnd, goal.y, goal.x) & A_CHARTEXT;
+		if('@' != ch && 'X' != ch){
+			mvwaddch(wnd, goal.y, goal.x, '.'|COLOR_PAIR(3));
+		}
+	}
+}
+
+bool Gameboard::areGoalsComplete(){
+	int zahler = 0;
+	for (Point check : goals){
+		char ch = mvwinch(wnd, check.y, check.x) & A_CHARTEXT;
+		if(ch == 'X'){
+			zahler++;
+		}
+		else{
+			return false;
+		}
+	}
+	if (zahler == goals.size()){
+		return true;
+	}
 }

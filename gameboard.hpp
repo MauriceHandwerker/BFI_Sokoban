@@ -4,6 +4,8 @@
 #include <string>
 #include <ncurses.h>
 #include <vector>
+#include <memory>
+#include <fstream> 
 using namespace std;
 
 class Point {
@@ -19,16 +21,19 @@ class Gameboard{
 		Point player;
 		char prestau = ' ';
 		char irestau = ' ';
-		WINDOW *loadGameboard();
-
+		WINDOW *loadGameboard(char **argv);
+		vector<Point> goals;
 	public:
-		Gameboard(int, int,string);
+		Gameboard(int, int,char **argv);
 		virtual ~Gameboard();
 		virtual WINDOW *getWindowHandle();
 		Point getPlayer();
 		void movePlayer(Point);
 		char getItem(Point pt);
 		void moveItem(Point from, Point to);
+		void displayGoals();
+		bool areGoalsComplete();
+
 };
 
 

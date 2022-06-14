@@ -1,4 +1,5 @@
 #include <string>
+#include <iostream>
 #include <memory>
 #include <unistd.h>
 #include <ncurses.h>
@@ -16,12 +17,17 @@ shared_ptr<Gameboard> gb; // Smart-Pointer auf das Gameboard-Objekt
 shared_ptr<Gameboard> gb2;
 shared_ptr<Gameboard> gb3;
 
+Point player;
+
 int init();
 void run();
 void close();
 
 int main () 
 {
+    player.x = 7;
+    player.y = 5;
+    cout << player.x << endl << player.y << endl;
     init();
     run();
     close();
@@ -29,11 +35,11 @@ int main ()
 
 int init() 
 {
-    gb = make_shared<Gameboard>(10, 10, 1,1, ""); // Erstellen eines Gameboard-Objekts
+    gb = make_shared<Gameboard>(10, 10, 1, 1, ""); // Erstellen eines Gameboard-Objekts
     wnd1 = gb->getWindowHandle(); // Holen des Ncurses-Handlers
-    gb2 = make_shared<Gameboard>(10, 10, 1,15, "");
+    gb2 = make_shared<Gameboard>(10, 10, 1, 15, "");
     wnd2 = gb2->getWindowHandle();
-    gb3 = make_shared<Gameboard>(10, 10, 1,30, "");
+    gb3 = make_shared<Gameboard>(10, 10, 1, 30, "");
     wnd3 = gb3->getWindowHandle();
     return 0;
 }

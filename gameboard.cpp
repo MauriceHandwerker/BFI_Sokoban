@@ -6,10 +6,10 @@
 
 using namespace std; // no Comment 
 
-Gameboard::Gameboard(int xMax, int yMax, string fileName) 
+Gameboard::Gameboard(int xMax, int yMax, int widht, int height, string fileName) 
 {
     initscr(); // Ncurses: Initialisierung + neues Fenster
-    wnd = newwin(yMax, xMax, 1, 1);
+    wnd = newwin(yMax, xMax, widht, height);
     cbreak();
     noecho();
     clear();

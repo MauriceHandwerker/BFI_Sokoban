@@ -12,7 +12,7 @@ class Gameboard
     WINDOW *wnd; // Eigenschaft
 
     public: // Sichtbarkeit
-    Gameboard(int, int, string); // Konstruktor
+    Gameboard(int, int, int, int, string); // Konstruktor
     virtual ~Gameboard(); // Destruktor
     virtual WINDOW *getWindowHandle(); // eine Methode
 };
